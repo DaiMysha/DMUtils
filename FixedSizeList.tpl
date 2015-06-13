@@ -120,4 +120,9 @@ namespace DMUtils {
         while(pos>=_max_size) pos-=_max_size;
         return _data[pos];
     }
+	
+	template <typename T>
+	T operator[](size_t i) {
+		return get(i);
+	}
 }

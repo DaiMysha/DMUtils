@@ -33,11 +33,7 @@ namespace DMUtils {
         T end(void) const;
         T get(size_t i);
 
-        // TODO
-        //operator++
-        //operator++(int)
-        //resize
-        //operator[]
+        T operator[](size_t i);
 
         private:
         T* _data;
