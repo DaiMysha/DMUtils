@@ -1,6 +1,10 @@
 /** FixedSizeList.h
+Author : DaiMysha
+https://github.com/DaiMysha
+
 Simple header for a generic fixed sized list using a static array
 The list replaces the elements in the order they were added if it is full
+
 last update : 24/10/2011
 creation : 24/10/2011
 */
