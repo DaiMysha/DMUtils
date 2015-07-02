@@ -1,11 +1,8 @@
 /** FixedSizeList.h
 Simple header for a generic fixed sized list using a static array
 The list replaces the elements in the order they were added if it is full
-creation : 24/10/2011
 last update : 24/10/2011
-
-changelog :
-*24/10/2011: creation
+creation : 24/10/2011
 */
 #ifndef HEADER_FIXEDLISIT
 #define HEADER_FIXEDLISIT
