@@ -1,4 +1,4 @@
-/** maths.hpp
+/** sfml.hpp
 Author : DaiMysha
 https://github.com/DaiMysha
 
