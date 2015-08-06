@@ -39,5 +39,10 @@ namespace sfml {
         return rotate(v,alpha,getAngleBetweenVectors(sf::Vector2f(0.0f,1.0f),v));
     }
 
+	template <typename T>
+	sf::Vector2<T> rotate(const sf::Vector2<T>& v, float alpha, const sf::Vector2<T>& o) {
+		return rotate(v-o,alpha)+o;
+	}
+
 }
 }

@@ -24,11 +24,15 @@ namespace sfml {
 
     ///If you don't know the angle of your base vector use the function with 2 parameters
     ///if you do know this angle pass it to this function, it saves time
+    /// rads
     template <typename T>
     sf::Vector2<T> rotate(const sf::Vector2<T>& v, float alpha, float vecRot);
 
     template <typename T>
     sf::Vector2<T> rotate(const sf::Vector2<T>& v, float alpha);
+
+    template <typename T>
+    sf::Vector2<T> rotate(const sf::Vector2<T>& v, float alpha, const sf::Vector2<T>& o);
 
 }
 }
