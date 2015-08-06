@@ -62,5 +62,15 @@ namespace maths {
     inline int signOf(const T& val) {
 		return (T(0)<val)-(val<T(0));
 	}
+
+    template <typename T>
+    constexpr inline T degToRad(const T& a) {
+		return a * T(M_PI) / T(180.0);
+	}
+
+    template <typename T>
+    constexpr inline T radToDeg(const T& a) {
+		return a * T(180.0) / T(M_PI);
+	}
 }
 }
