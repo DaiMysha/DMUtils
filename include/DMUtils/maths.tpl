@@ -72,5 +72,16 @@ namespace maths {
     constexpr inline T radToDeg(const T& a) {
 		return a * T(180.0) / T(M_PI);
 	}
+
+	template <int N>
+	struct fact {
+		enum {value = N*fact<N-1>::value};
+	};
+
+	template<>
+	struct fact<0> {
+		enum {value = 1};
+	};
+
 }
 }

@@ -49,6 +49,9 @@ namespace maths {
 
     template <typename T>
     constexpr inline T radToDeg(const T& a);
+	
+	template <int N>
+	struct fact;
 
 	/*
 	inline float sqrt(float number) {
