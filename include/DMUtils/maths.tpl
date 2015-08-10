@@ -33,7 +33,7 @@ namespace maths {
 
 
     template <int N>
-    class power {
+    struct power {
 		template <typename T>
 		static inline T of(const T& val) {
 			return val*power<N-1>::of(val);
@@ -41,7 +41,7 @@ namespace maths {
 	};
 
 	template <>
-	class power<0> {
+	struct power<0> {
 		template <typename T>
 		static inline T of(const T& val) {
 			return T(1);

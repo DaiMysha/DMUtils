@@ -33,7 +33,7 @@ namespace maths {
     inline const T& max(const T& a, const T& b, const T& c, const Args& ... args);
 
     template <int N>
-    class power;
+    struct power;
 
     template <typename T>
     inline T clamp(const T& val, const T& min, const T& max);
