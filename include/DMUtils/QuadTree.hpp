@@ -11,12 +11,19 @@ creation : 07/09/2015
 #ifndef HEADER_DMUTILS_QUADTREE
 #define HEADER_DMUTILS_QUADTREE
 
+#include <memory>
+#include <array>
+#include <list>
+
 namespace DMUtils {
 namespace QuadTree {
 
     template <typename T, int N = 4, typename TYPE = float>
     class QuadTree {
-        public:			
+        QuadTree(const QuadTree& other) = delete;
+        QuadTree& operator=(const QuadTree& other) = delete;
+
+        public:
             template <typename UNIT>
             struct AABB //externalize it ?
             {
@@ -41,48 +48,47 @@ namespace QuadTree {
 
             struct Node {
                 AABB<TYPE> box;
-                std::unique_ptr<T> data;
-            };
-
-            struct Data
-            {
-                T* data;
-                QuadTree* owner;
-                void remove(){owner->remove(data);};
+                std::shared_ptr<T> data;
             };
 
             QuadTree(TYPE width, TYPE height);
             QuadTree(TYPE left, TYPE top, TYPE width, TYPE height);
 
-            QuadTree(const QuadTree& other) = delete;
             QuadTree(QuadTree&& other) = default;
-
-            QuadTree& operator=(const QuadTree& other) = delete;
             QuadTree& operator=(QuadTree&& other) = default;
 
             template <typename ... Args>
-            void emplace(AABB<TYPE> p, Args ... args);
-            void insert(AABB<TYPE> p, T* item);
-            void remove(T* item);
+            std::shared_ptr<T>& emplace(AABB<TYPE> p, Args ... args);
+
+            template <typename ... Args>
+            std::shared_ptr<T>& emplace(TYPE x,TYPE y, Args ... args);
+
+            void insert(AABB<TYPE> p, const std::shared_ptr<T>& item);
+            void insert(TYPE x,TYPE y, const std::shared_ptr<T>& item);
+
+            void remove(const std::shared_ptr<T>& item);
             void remove(AABB<TYPE> p);
-            void remove(QuadTree* branch);
+            //void remove(QuadTree* branch);
+
             void clear();
 
             size_t size() const;
+            void setLimits(TYPE width, TYPE height);
 
             std::list<Node> query(AABB<TYPE> region);
-            std:array<T*,N>& data();
-            const std:array<T*,N>& data() const;
+            std::list<Node>& data();
+            const std::list<Node>& data() const;
+
+
 
         private:
-			QuadTree* _father;
+			QuadTree* _parent;
 			std::unique_ptr<QuadTree> _northWest;
 			std::unique_ptr<QuadTree> _northEast;
 			std::unique_ptr<QuadTree> _southWest;
 			std::unique_ptr<QuadTree> _southEast;
 			std::list<Node> _data;
 			AABB<TYPE> _aabb;
-
     };
 
 
