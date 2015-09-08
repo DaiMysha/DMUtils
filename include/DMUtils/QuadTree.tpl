@@ -1,5 +1,9 @@
 
 namespace DMUtils {
+	
+	template <typename T, int N, typename TYPE>
+	QuadTree<T,N,TYPE>::Node::Node(const physics::AABB<TYPE>& b, const std::shared_ptr<T>& d) : box(b), data(d) {
+	}
 
     template <typename T, int N, typename TYPE>
 	QuadTree<T,N,TYPE>::QuadTree(TYPE width, TYPE height) : QuadTree(0,0,width,height) {
@@ -12,7 +16,7 @@ namespace DMUtils {
 
 	template <typename T, int N, typename TYPE>
 	template <typename ... Args>
-	std::shared_ptr<T>& QuadTree<T,N,TYPE>::emplace(physics::AABB<TYPE> p, Args ... args) {
+	std::shared_ptr<T> QuadTree<T,N,TYPE>::emplace(physics::AABB<TYPE> p, Args ... args) {
 		std::shared_ptr<T> data(new T(std::forward<Args>(args)...));
 		insert(p,data);
 		return data;
@@ -20,7 +24,7 @@ namespace DMUtils {
 
 	template <typename T, int N, typename TYPE>
 	template <typename ... Args>
-	std::shared_ptr<T>& QuadTree<T,N,TYPE>::emplace(TYPE x, TYPE y, Args ... args) {
+	std::shared_ptr<T> QuadTree<T,N,TYPE>::emplace(TYPE x, TYPE y, Args ... args) {
 		std::shared_ptr<T> data(new T(std::forward<Args>(args)...));
 		insert(physics::AABB<TYPE>(x,y,0,0),data);
 		return data;
@@ -47,10 +51,10 @@ namespace DMUtils {
 			return true;
 		}
 		if(_northWest) {
-			if(_northWest.remove(item)) return true;
-			if(_northEast.remove(item)) return true;
-			if(_southWest.remove(item)) return true;
-			if(_southEast.remove(item)) return true;
+			if(_northWest->remove(item)) return true;
+			if(_northEast->remove(item)) return true;
+			if(_southWest->remove(item)) return true;
+			if(_southEast->remove(item)) return true;
 		}
 		return false;
 	}
@@ -66,10 +70,10 @@ namespace DMUtils {
 			return true;
 		}
 		if(_northWest) {
-			if(_northWest._aabb.collides(node.box)) return _northWest.remove(node);
-			if(_northEast._aabb.collides(node.box)) return _northEast.remove(node);
-			if(_southWest._aabb.collides(node.box)) return _southWest.remove(node);
-			if(_southEast._aabb.collides(node.box)) return _southEast.remove(node);
+			if(_northWest->_aabb.collides(node.box)) return _northWest->remove(node);
+			if(_northEast->_aabb.collides(node.box)) return _northEast->remove(node);
+			if(_southWest->_aabb.collides(node.box)) return _southWest->remove(node);
+			if(_southEast->_aabb.collides(node.box)) return _southEast->remove(node);
 		}
 		return false;
 	}
@@ -88,10 +92,10 @@ namespace DMUtils {
 		});
 
 		if(_northWest) {
-			res += _northWest.remove(p);
-			res += _northEast.remove(p);
-			res += _southWest.remove(p);
-			res += _southEast.remove(p);
+			res += _northWest->remove(p);
+			res += _northEast->remove(p);
+			res += _southWest->remove(p);
+			res += _southEast->remove(p);
 		}
 
 		return res;
@@ -170,7 +174,7 @@ namespace DMUtils {
 		std::list<Node> tmp = _data;
 		_data.clear();
 		for(auto& it : tmp) {
-			insert(it->box,it->data);
+			insert(it.box,it.data);
 		}
 	}
 
@@ -181,22 +185,23 @@ namespace DMUtils {
 			QuadTree<T,N,TYPE>* target = this;
 			int insertCount = 0;
 
-			if(_northWest._aabb.collides(p)) {
+			if(_northWest->_aabb.collides(p)) {
 				++insertCount;
-				target = _northWest;
+				target = _northWest.get();
 			}
-			if(_northEast._aabb.collides(p)) {
+			if(_northEast->_aabb.collides(p)) {
 				++insertCount;
-				target = _northEast;
+				target = _northEast.get();
 			}
-			if(_southWest._aabb.collides(p)) {
+			if(_southWest->_aabb.collides(p)) {
 				++insertCount;
-				target = _southWest;
+				target = _southWest.get();
 			}
-			if(_southEast._aabb.collides(p)) {
+			if(_southEast->_aabb.collides(p)) {
 				++insertCount;
-				target = _southEast;
+				target = _southEast.get();
 			}
+			
 			if(insertCount == 1) { //only one node wants it
 				target->insert(p,item);
 				return;
@@ -220,15 +225,15 @@ namespace DMUtils {
 		}
 
 		if(_northWest) {
-			if(_northWest._aabb.collides(region)) _northWest._query(region,res);
-			if(_northEast._aabb.collides(region)) _northEast._query(region,res);
-			if(_southWest._aabb.collides(region)) _southWest._query(region,res);
-			if(_southEast._aabb.collides(region)) _southEast._query(region,res);
+			if(_northWest->_aabb.collides(region)) _northWest->_query(region,res);
+			if(_northEast->_aabb.collides(region)) _northEast->_query(region,res);
+			if(_southWest->_aabb.collides(region)) _southWest->_query(region,res);
+			if(_southEast->_aabb.collides(region)) _southEast->_query(region,res);
 		}
 	}
 	template <typename T, int N, typename TYPE>
 	void QuadTree<T,N,TYPE>::_getData(std::list<std::shared_ptr<T>>& ans) const {
-		for(Node& node : _data)
+		for(const Node& node : _data)
 			ans.emplace_back(node.data);
 
 		if(_northWest) {
@@ -242,7 +247,7 @@ namespace DMUtils {
 	template <typename T, int N, typename TYPE>
 	void QuadTree<T,N,TYPE>::_nodeData(std::list<Node>& ans) const {
 		ans.insert(ans.end(),_data.begin(),_data.end());
-		
+
 		if(_northWest) {
 			_northWest->_nodeData(ans);
 			_northEast->_nodeData(ans);

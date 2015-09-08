@@ -12,7 +12,7 @@ namespace physics {
 
 	template <typename UNIT>
 	bool AABB<UNIT>::collides(const AABB& other) {
-		return !( (left > other.l + other.width) || left + width < other.l ||
+		return !( (left > other.left + other.width) || left + width < other.left ||
 				   top > other.top + other.height || top + height < other.top );
 	}
 

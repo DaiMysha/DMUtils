@@ -13,17 +13,17 @@ Generic QuadTree container
 #include <memory>
 #include <array>
 #include <list>
-
 namespace DMUtils {
 
     template <typename T, int N = 4, typename TYPE = float>
     class QuadTree {
-    QuadTree(const QuadTree& other) = delete;
+        QuadTree(const QuadTree& other) = delete;
         QuadTree& operator=(const QuadTree& other) = delete;
 
         public:
 
             struct Node {
+                Node(const physics::AABB<TYPE>& b, const std::shared_ptr<T>& d);
                 physics::AABB<TYPE> box;
                 std::shared_ptr<T> data;
             };
@@ -35,10 +35,10 @@ namespace DMUtils {
             QuadTree& operator=(QuadTree&& other) = default;
 
             template <typename ... Args>
-            std::shared_ptr<T>& emplace(physics::AABB<TYPE> p, Args ... args);
+            std::shared_ptr<T> emplace(physics::AABB<TYPE> p, Args ... args);
 
             template <typename ... Args>
-            std::shared_ptr<T>& emplace(TYPE x, TYPE y, Args ... args);
+            std::shared_ptr<T> emplace(TYPE x, TYPE y, Args ... args);
 
             void insert(physics::AABB<TYPE> p, const std::shared_ptr<T>& item);
             void insert(TYPE x, TYPE y, const std::shared_ptr<T>& item);
