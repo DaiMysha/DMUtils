@@ -18,7 +18,7 @@ namespace DMUtils {
 
     template <typename T, int N = 4, typename TYPE = float>
     class QuadTree {
-        QuadTree(const QuadTree& other) = delete;
+    QuadTree(const QuadTree& other) = delete;
         QuadTree& operator=(const QuadTree& other) = delete;
 
         public:
@@ -43,32 +43,37 @@ namespace DMUtils {
             void insert(physics::AABB<TYPE> p, const std::shared_ptr<T>& item);
             void insert(TYPE x, TYPE y, const std::shared_ptr<T>& item);
 
-            void remove(const std::shared_ptr<T>& item);
-            void remove(physics::AABB<TYPE> p);
-            //void remove(QuadTree* branch);
+            bool remove(const std::shared_ptr<T>& item);
+            bool remove(const Node& node);
+            size_t remove(physics::AABB<TYPE> p);
 
             void clear();
 
             size_t size() const;
-            void setLimits(TYPE width, TYPE height);
+            void setArea(const physics::AABB<TYPE>& area);
 
-            std::list<Node> query(physics::AABB<TYPE> region);
-            std::list<std::shared_ptr<T>> data();//recursive
-            const std::list<std::shared_ptr<T>> data() const;
-
+            std::list<QuadTree::Node> query(physics::AABB<TYPE> region) const;
+            std::list<std::shared_ptr<T>> data() const;
+            std::list<QuadTree::Node> nodeData() const;
 
         private:
+            void _subdivide();
+            inline void _insert(physics::AABB<TYPE> p, const std::shared_ptr<T>& item);
+            inline void _query(physics::AABB<TYPE> region, std::list<Node>& res) const;
+            inline void _getData(std::list<std::shared_ptr<T>>& ans) const;
+            inline void _nodeData(std::list<Node>& ans) const;
+
 			QuadTree* _parent;
 			std::unique_ptr<QuadTree> _northWest;
 			std::unique_ptr<QuadTree> _northEast;
 			std::unique_ptr<QuadTree> _southWest;
 			std::unique_ptr<QuadTree> _southEast;
-			std::list<Node> _data;
+			std::list<QuadTree::Node> _data;
 			physics::AABB<TYPE> _aabb;
     };
 
 }
 
-
+#include "QuadTree.tpl"
 
 #endif // HEADER_DMUTILS_QUADTREE

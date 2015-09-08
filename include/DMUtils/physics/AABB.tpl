@@ -3,6 +3,10 @@ namespace DMUtils {
 namespace physics {
 
 	template <typename UNIT>
+	AABB<UNIT>::AABB() : AABB(0,0,0,0) {
+	}
+
+	template <typename UNIT>
 	AABB<UNIT>::AABB(UNIT l, UNIT t, UNIT w, UNIT h) : left(l), top(t), width(w), height(h) {
 	}
 

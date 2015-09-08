@@ -16,13 +16,14 @@ namespace DMUtils {
 namespace physics {
 
     template <typename UNIT>
-    struct AABB //externalize it ?
+    struct AABB
     {
         UNIT left;
         UNIT top;
         UNIT width;
         UNIT height;
 
+        AABB();
         AABB(UNIT l, UNIT t, UNIT w, UNIT h);
 
         bool collides(const AABB& other);
