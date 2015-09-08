@@ -51,10 +51,11 @@ namespace DMUtils {
 			return true;
 		}
 		if(_northWest) {
-			if(_northWest->remove(item)) return true;
-			if(_northEast->remove(item)) return true;
-			if(_southWest->remove(item)) return true;
-			if(_southEast->remove(item)) return true;
+			bool res = false;
+			if(_northWest->remove(item)) res =  true;
+			if(!res && _northEast->remove(item)) res =  true;
+			if(!res && _southWest->remove(item)) res =  true;
+			if(!res && _southEast->remove(item)) res =  true;
 		}
 		return false;
 	}
@@ -97,6 +98,8 @@ namespace DMUtils {
 			res += _southWest->remove(p);
 			res += _southEast->remove(p);
 		}
+		
+		shrinkToFit();
 
 		return res;
 	}
@@ -158,6 +161,33 @@ namespace DMUtils {
 		std::list<Node> ans = _data;
 		_nodeData(ans);
 		return ans;
+	}
+	
+	template <typename T, int N, typename TYPE>
+	size_t QuadTree<T,N,TYPE>::shrinkToFit() {
+		
+		size_t s = _data.size();
+		if(!_northWest) return s;
+		
+		s += _northWest->shrinkToFit();
+		s += _northEast->shrinkToFit();
+		s += _southWest->shrinkToFit();
+		s += _southEast->shrinkToFit();
+		
+		if(s + _data.size() < N) {
+			_data.insert(_data.end(),_northWest->_data.begin(),_northWest->_data.end());
+			_data.insert(_data.end(),_northEast->_data.begin(),_northEast->_data.end());
+			_data.insert(_data.end(),_southWest->_data.begin(),_southWest->_data.end());
+			_data.insert(_data.end(),_southEast->_data.begin(),_southEast->_data.end());
+		}
+		
+		if(s == _data.size()) {//previous if always comes here
+			_northWest.reset(nullptr);
+			_northEast.reset(nullptr);
+			_southWest.reset(nullptr);
+			_southEast.reset(nullptr);
+		}
+		return s;
 	}
 
 	/****************************** PRIVATE ******************************/

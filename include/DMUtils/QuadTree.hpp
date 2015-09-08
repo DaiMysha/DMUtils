@@ -56,6 +56,8 @@ namespace DMUtils {
             std::list<std::shared_ptr<T>> data() const;
             std::list<QuadTree::Node> nodeData() const;
 
+            size_t shrinkToFit();
+
         private:
             void _subdivide();
             inline void _insert(physics::AABB<TYPE> p, const std::shared_ptr<T>& item);
