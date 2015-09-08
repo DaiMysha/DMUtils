@@ -61,10 +61,10 @@ namespace QuadTree {
             std::shared_ptr<T>& emplace(AABB<TYPE> p, Args ... args);
 
             template <typename ... Args>
-            std::shared_ptr<T>& emplace(TYPE x,TYPE y, Args ... args);
+            std::shared_ptr<T>& emplace(TYPE x, TYPE y, Args ... args);
 
             void insert(AABB<TYPE> p, const std::shared_ptr<T>& item);
-            void insert(TYPE x,TYPE y, const std::shared_ptr<T>& item);
+            void insert(TYPE x, TYPE y, const std::shared_ptr<T>& item);
 
             void remove(const std::shared_ptr<T>& item);
             void remove(AABB<TYPE> p);
@@ -76,9 +76,8 @@ namespace QuadTree {
             void setLimits(TYPE width, TYPE height);
 
             std::list<Node> query(AABB<TYPE> region);
-            std::list<Node>& data();
-            const std::list<Node>& data() const;
-
+            std::list<std::shared_ptr<T>> data();//recursive
+            const std::list<std::shared_ptr<T>> data() const;
 
 
         private:
