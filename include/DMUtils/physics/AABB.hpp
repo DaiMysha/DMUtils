@@ -15,7 +15,7 @@ Generic AABB
 namespace DMUtils {
 namespace physics {
 
-    template <typename UNIT>
+    template <typename UNIT = float>
     struct AABB
     {
         UNIT left;
