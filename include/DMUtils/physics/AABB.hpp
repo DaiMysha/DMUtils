@@ -26,9 +26,9 @@ namespace physics {
         AABB();
         AABB(UNIT l, UNIT t, UNIT w, UNIT h);
 
-        bool collides(const AABB& other);
+        bool collides(const AABB& other) const;
 
-        bool contains(UNIT x, UNIT y);
+        bool contains(UNIT x, UNIT y) const;
     };
 
 }
