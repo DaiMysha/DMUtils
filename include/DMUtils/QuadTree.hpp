@@ -13,6 +13,8 @@ Generic QuadTree container
 #include <memory>
 #include <array>
 #include <list>
+#include <algorithm>
+
 namespace DMUtils {
 
     template <typename T, int N = 4, typename TYPE = float>
