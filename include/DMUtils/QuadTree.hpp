@@ -62,7 +62,6 @@ namespace DMUtils {
             inline void _query(physics::AABB<TYPE> region, std::list<Node>& res) const;
             inline void _getData(std::list<T*>& ans) const;
             inline void _nodeData(std::list<Node>& ans) const;
-            inline size_t _depth(size_t parent);
 
 			std::unique_ptr<QuadTree> _northWest;
 			std::unique_ptr<QuadTree> _northEast;

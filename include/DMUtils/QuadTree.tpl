@@ -176,7 +176,11 @@ namespace DMUtils {
 
 	template <typename T, int N, typename TYPE>
     size_t QuadTree<T,N,TYPE>::depth() {
-        return _depth(0);
+        size_t ans = 1;
+        if(_northWest) {
+            ans += DMUtils::maths::max(_northWest->depth(),_northEast->depth(),_southWest->depth(),_southEast->depth());
+        }
+        return ans;
     }
 
 	/****************************** PRIVATE ******************************/
@@ -274,13 +278,4 @@ namespace DMUtils {
 			_southEast->_nodeData(ans);
 		}
 	}
-
-	template <typename T, int N, typename TYPE>
-    size_t QuadTree<T,N,TYPE>::_depth(size_t parent) {
-        size_t ans = parent + 1;
-        if(_northWest) {
-            ans = DMUtils::maths::max(_northWest->_depth(ans),_northEast->_depth(ans),_southWest->_depth(ans),_southEast->_depth(ans));
-        }
-        return ans;
-    }
 }
