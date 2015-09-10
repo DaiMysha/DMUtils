@@ -10,7 +10,6 @@ Generic QuadTree container
 
 #include <DMUtils/physics/AABB.hpp>
 
-#include <memory>
 #include <array>
 #include <list>
 #include <algorithm>
@@ -25,9 +24,9 @@ namespace DMUtils {
         public:
 
             struct Node {
-                Node(const physics::AABB<TYPE>& b, const std::shared_ptr<T>& d);
+                Node(const physics::AABB<TYPE>& b, T* d);
                 physics::AABB<TYPE> box;
-                std::shared_ptr<T> data;
+                T* data;
             };
 
             QuadTree(TYPE width, TYPE height);
@@ -36,16 +35,10 @@ namespace DMUtils {
             QuadTree(QuadTree&& other) = default;
             QuadTree& operator=(QuadTree&& other) = default;
 
-            template <typename ... Args>
-            std::shared_ptr<T> emplace(physics::AABB<TYPE> p, Args ... args);
+            void insert(physics::AABB<TYPE> p, T* item);
+            void insert(TYPE x, TYPE y, T* item);
 
-            template <typename ... Args>
-            std::shared_ptr<T> emplace(TYPE x, TYPE y, Args ... args);
-
-            void insert(physics::AABB<TYPE> p, const std::shared_ptr<T>& item);
-            void insert(TYPE x, TYPE y, const std::shared_ptr<T>& item);
-
-            bool remove(const std::shared_ptr<T>& item);
+            bool remove(T* item);
             bool remove(const Node& node);
             size_t remove(physics::AABB<TYPE> p);
 
@@ -55,19 +48,18 @@ namespace DMUtils {
             void setArea(const physics::AABB<TYPE>& area);
 
             std::list<QuadTree::Node> query(physics::AABB<TYPE> region) const;
-            std::list<std::shared_ptr<T>> data() const;
+            std::list<T*> data() const;
             std::list<QuadTree::Node> nodeData() const;
 
             size_t shrinkToFit();
 
         private:
             void _subdivide();
-            inline void _insert(physics::AABB<TYPE> p, const std::shared_ptr<T>& item);
+            inline void _insert(physics::AABB<TYPE> p, T* item);
             inline void _query(physics::AABB<TYPE> region, std::list<Node>& res) const;
-            inline void _getData(std::list<std::shared_ptr<T>>& ans) const;
+            inline void _getData(std::list<T*>& ans) const;
             inline void _nodeData(std::list<Node>& ans) const;
 
-			QuadTree* _parent;
 			std::unique_ptr<QuadTree> _northWest;
 			std::unique_ptr<QuadTree> _northEast;
 			std::unique_ptr<QuadTree> _southWest;

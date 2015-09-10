@@ -1,8 +1,8 @@
 
 namespace DMUtils {
-	
+
 	template <typename T, int N, typename TYPE>
-	QuadTree<T,N,TYPE>::Node::Node(const physics::AABB<TYPE>& b, const std::shared_ptr<T>& d) : box(b), data(d) {
+	QuadTree<T,N,TYPE>::Node::Node(const physics::AABB<TYPE>& b, T* d) : box(b), data(d) {
 	}
 
     template <typename T, int N, typename TYPE>
@@ -15,44 +15,28 @@ namespace DMUtils {
 	}
 
 	template <typename T, int N, typename TYPE>
-	template <typename ... Args>
-	std::shared_ptr<T> QuadTree<T,N,TYPE>::emplace(physics::AABB<TYPE> p, Args ... args) {
-		std::shared_ptr<T> data(new T(std::forward<Args>(args)...));
-		insert(p,data);
-		return data;
-	}
-
-	template <typename T, int N, typename TYPE>
-	template <typename ... Args>
-	std::shared_ptr<T> QuadTree<T,N,TYPE>::emplace(TYPE x, TYPE y, Args ... args) {
-		std::shared_ptr<T> data(new T(std::forward<Args>(args)...));
-		insert(physics::AABB<TYPE>(x,y,0,0),data);
-		return data;
-	}
-
-	template <typename T, int N, typename TYPE>
-	void QuadTree<T,N,TYPE>::insert(physics::AABB<TYPE> p, const std::shared_ptr<T>& item) {
+	void QuadTree<T,N,TYPE>::insert(physics::AABB<TYPE> p, T* item) {
 		if(_aabb.collides(p)) _insert(p,item);
 	}
 
 	template <typename T, int N, typename TYPE>
-	void QuadTree<T,N,TYPE>::insert(TYPE x, TYPE y, const std::shared_ptr<T>& item) {
+	void QuadTree<T,N,TYPE>::insert(TYPE x, TYPE y, T* item) {
 		insert(physics::AABB<TYPE>(x,y,0,0),item);
 	}
 
 	template <typename T, int N, typename TYPE>
-	bool QuadTree<T,N,TYPE>::remove(const std::shared_ptr<T>& item) {
+	bool QuadTree<T,N,TYPE>::remove(T* item) {
 		auto it = std::find_if(_data.begin(),_data.end(),[&item](const QuadTree::Node& n) {
-			return n.data.get() == item.get();
+			return n.data == item;
 		});
 
-		if(it != data.end()) {
+		if(it != _data.end()) {
 			_data.erase(it);
 			return true;
 		}
 		if(_northWest) {
 			bool res = false;
-			if(_northWest->remove(item)) res =  true;
+			res = _northWest->remove(item);
 			if(!res && _northEast->remove(item)) res =  true;
 			if(!res && _southWest->remove(item)) res =  true;
 			if(!res && _southEast->remove(item)) res =  true;
@@ -98,7 +82,7 @@ namespace DMUtils {
 			res += _southWest->remove(p);
 			res += _southEast->remove(p);
 		}
-		
+
 		shrinkToFit();
 
 		return res;
@@ -150,8 +134,8 @@ namespace DMUtils {
 	}
 
 	template <typename T, int N, typename TYPE>
-	std::list<std::shared_ptr<T>> QuadTree<T,N,TYPE>::data() const {
-		std::list<std::shared_ptr<T>> ans;
+	std::list<T*> QuadTree<T,N,TYPE>::data() const {
+		std::list<T*> ans;
 		_getData(ans);
 		return ans;
 	}
@@ -162,25 +146,25 @@ namespace DMUtils {
 		_nodeData(ans);
 		return ans;
 	}
-	
+
 	template <typename T, int N, typename TYPE>
 	size_t QuadTree<T,N,TYPE>::shrinkToFit() {
-		
+
 		size_t s = _data.size();
 		if(!_northWest) return s;
-		
+
 		s += _northWest->shrinkToFit();
 		s += _northEast->shrinkToFit();
 		s += _southWest->shrinkToFit();
 		s += _southEast->shrinkToFit();
-		
+
 		if(s + _data.size() < N) {
 			_data.insert(_data.end(),_northWest->_data.begin(),_northWest->_data.end());
 			_data.insert(_data.end(),_northEast->_data.begin(),_northEast->_data.end());
 			_data.insert(_data.end(),_southWest->_data.begin(),_southWest->_data.end());
 			_data.insert(_data.end(),_southEast->_data.begin(),_southEast->_data.end());
 		}
-		
+
 		if(s == _data.size()) {//previous if always comes here
 			_northWest.reset(nullptr);
 			_northEast.reset(nullptr);
@@ -209,7 +193,7 @@ namespace DMUtils {
 	}
 
 	template <typename T, int N, typename TYPE>
-	void QuadTree<T,N,TYPE>::_insert(physics::AABB<TYPE> p, const std::shared_ptr<T>& item) {
+	void QuadTree<T,N,TYPE>::_insert(physics::AABB<TYPE> p, T* item) {
 
 		if(_northWest) { //already subdivided once
 			QuadTree<T,N,TYPE>* target = this;
@@ -231,7 +215,7 @@ namespace DMUtils {
 				++insertCount;
 				target = _southEast.get();
 			}
-			
+
 			if(insertCount == 1) { //only one node wants it
 				target->insert(p,item);
 				return;
@@ -262,7 +246,7 @@ namespace DMUtils {
 		}
 	}
 	template <typename T, int N, typename TYPE>
-	void QuadTree<T,N,TYPE>::_getData(std::list<std::shared_ptr<T>>& ans) const {
+	void QuadTree<T,N,TYPE>::_getData(std::list<T*>& ans) const {
 		for(const Node& node : _data)
 			ans.emplace_back(node.data);
 
