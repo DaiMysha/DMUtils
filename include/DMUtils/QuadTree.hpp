@@ -9,6 +9,7 @@ Generic QuadTree container
 #define HEADER_DMUTILS_QUADTREE
 
 #include <DMUtils/physics/AABB.hpp>
+#include <DMUtils/maths.hpp>
 
 #include <array>
 #include <list>
@@ -53,12 +54,15 @@ namespace DMUtils {
 
             size_t shrinkToFit();
 
+            size_t depth();
+
         private:
             void _subdivide();
             inline void _insert(physics::AABB<TYPE> p, T* item);
             inline void _query(physics::AABB<TYPE> region, std::list<Node>& res) const;
             inline void _getData(std::list<T*>& ans) const;
             inline void _nodeData(std::list<Node>& ans) const;
+            inline size_t _depth(size_t parent);
 
 			std::unique_ptr<QuadTree> _northWest;
 			std::unique_ptr<QuadTree> _northEast;
