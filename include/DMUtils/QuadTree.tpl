@@ -10,8 +10,19 @@ namespace DMUtils {
 	}
 
 	template <typename T, int N, typename TYPE>
-	QuadTree<T,N,TYPE>::QuadTree(TYPE left, TYPE top, TYPE width, TYPE height) {
-		_aabb = physics::AABB<TYPE>(left,top,width,height);
+	QuadTree<T,N,TYPE>::QuadTree(TYPE left, TYPE top, TYPE width, TYPE height) :
+		_northWest(nullptr),
+		_northEast(nullptr),
+		_southWest(nullptr),
+		_southEast(nullptr),
+		_aabb(left,top,width,height)
+	{
+	}
+
+	template <typename T, int N, typename TYPE>
+	QuadTree<T,N,TYPE>::~QuadTree()
+	{
+		_deleteChildren();
 	}
 
 	template <typename T, int N, typename TYPE>
@@ -91,17 +102,12 @@ namespace DMUtils {
 	template <typename T, int N, typename TYPE>
 	void QuadTree<T,N,TYPE>::clear() {
 		if(_northWest) {
-			_northWest->clear();
-			_northWest.reset(nullptr);
-
+			/*_northWest->clear();
 			_northEast->clear();
-			_northEast.reset(nullptr);
-
 			_southWest->clear();
-			_southWest.reset(nullptr);
-
-			_southEast->clear();
-			_southEast.reset(nullptr);
+			_southEast->clear();*/
+			
+			_deleteChildren();
 		}
 		_data.clear();
 	}
@@ -158,18 +164,15 @@ namespace DMUtils {
 		s += _southWest->shrinkToFit();
 		s += _southEast->shrinkToFit();
 
-		if(s + _data.size() < N) {
-			_data.insert(_data.end(),_northWest->_data.begin(),_northWest->_data.end());
-			_data.insert(_data.end(),_northEast->_data.begin(),_northEast->_data.end());
-			_data.insert(_data.end(),_southWest->_data.begin(),_southWest->_data.end());
-			_data.insert(_data.end(),_southEast->_data.begin(),_southEast->_data.end());
+		if(s + _data.size() <= N) {
+			_data.splice(_data.end(),_northWest->_data);
+			_data.splice(_data.end(),_northEast->_data);
+			_data.splice(_data.end(),_southWest->_data);
+			_data.splice(_data.end(),_southEast->_data);
 		}
 
 		if(s == _data.size()) {//previous if always comes here
-			_northWest.reset(nullptr);
-			_northEast.reset(nullptr);
-			_southWest.reset(nullptr);
-			_southEast.reset(nullptr);
+			_deleteChildren();
 		}
 		return s;
 	}
@@ -189,10 +192,12 @@ namespace DMUtils {
 	void QuadTree<T,N,TYPE>::_subdivide() {
 		float hw = _aabb.width/2.0;
 		float hh = _aabb.height/2.0;
-		_northWest.reset(new QuadTree<T,N,TYPE>(_aabb.left,_aabb.top,hw,hh));
-		_northEast.reset(new QuadTree<T,N,TYPE>(_aabb.left+hw,_aabb.top,hw,hh));
-		_southWest.reset(new QuadTree<T,N,TYPE>(_aabb.left,_aabb.top+hh,hw,hh));
-		_southEast.reset(new QuadTree<T,N,TYPE>(_aabb.left+hw,_aabb.top+hh,hw,hh));
+		_deleteChildren();
+		
+		_northWest =  new QuadTree<T,N,TYPE>(_aabb.left,_aabb.top,hw,hh);
+		_northEast = new QuadTree<T,N,TYPE>(_aabb.left+hw,_aabb.top,hw,hh);
+		_southWest = new QuadTree<T,N,TYPE>(_aabb.left,_aabb.top+hh,hw,hh);
+		_southEast = new QuadTree<T,N,TYPE>(_aabb.left+hw,_aabb.top+hh,hw,hh);
 
 		std::list<Node> tmp = _data;
 		_data.clear();
@@ -210,19 +215,19 @@ namespace DMUtils {
 
 			if(_northWest->_aabb.collides(p)) {
 				++insertCount;
-				target = _northWest.get();
+				target = _northWest;
 			}
 			if(_northEast->_aabb.collides(p)) {
 				++insertCount;
-				target = _northEast.get();
+				target = _northEast;
 			}
 			if(_southWest->_aabb.collides(p)) {
 				++insertCount;
-				target = _southWest.get();
+				target = _southWest;
 			}
 			if(_southEast->_aabb.collides(p)) {
 				++insertCount;
-				target = _southEast.get();
+				target = _southEast;
 			}
 
 			if(insertCount == 1) { //only one node wants it
@@ -277,5 +282,21 @@ namespace DMUtils {
 			_southWest->_nodeData(ans);
 			_southEast->_nodeData(ans);
 		}
+	}
+	
+	template <typename T, int N, typename TYPE>
+	void QuadTree<T,N,TYPE>::_deleteChildren()
+	{
+		delete _northWest;
+		_northWest = nullptr;
+
+		delete _northEast;
+		_northEast = nullptr;
+
+		delete _southWest;
+		_southWest = nullptr;
+
+		delete _southEast;
+		_southEast = nullptr;
 	}
 }

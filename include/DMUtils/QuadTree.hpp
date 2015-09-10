@@ -63,10 +63,12 @@ namespace DMUtils {
             inline void _getData(std::list<T*>& ans) const;
             inline void _nodeData(std::list<Node>& ans) const;
 
-			std::unique_ptr<QuadTree> _northWest;
-			std::unique_ptr<QuadTree> _northEast;
-			std::unique_ptr<QuadTree> _southWest;
-			std::unique_ptr<QuadTree> _southEast;
+            inline void _deleteChildren();
+
+			QuadTree* _northWest;
+			QuadTree* _northEast;
+			QuadTree* _southWest;
+			QuadTree* _southEast;
 			std::list<QuadTree::Node> _data;
 			physics::AABB<TYPE> _aabb;
     };
