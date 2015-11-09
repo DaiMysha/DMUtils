@@ -21,6 +21,12 @@ namespace sfml {
     T norm2(const sf::Vector2<T>& v);
 
     template <typename T>
+    T norm(const sf::Vector2<T>& v);
+	
+	template <typename T>
+	sf::Vector2<T> dot(const sf::Vector2<T>& a, const sf::Vector2<T>& b);
+
+    template <typename T>
     float getAngleBetweenVectors(const sf::Vector2<T>& o, const sf::Vector2<T>& v);
 
     ///If you don't know the angle of your base vector use the function with 2 parameters

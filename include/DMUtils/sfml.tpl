@@ -19,6 +19,16 @@ namespace sfml {
     T norm2(const sf::Vector2<T>& v) {
         return (v.x*v.x + v.y*v.y);
     }
+	
+    template <typename T>
+    T norm(const sf::Vector2<T>& v) {
+        return sqrt(norm2((v.x*v.x + v.y*v.y)));
+    }
+	
+	template <typename T>
+	sf::Vector2<T> dot(const sf::Vector2<T>& a, const sf::Vector2<T>& b) {
+		return a.x*b.x + a.y*b.y;
+	}
 
     template <typename T>
     float getAngleBetweenVectors(const sf::Vector2<T>& o, const sf::Vector2<T>& v) {
