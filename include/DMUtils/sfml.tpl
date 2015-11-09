@@ -26,7 +26,7 @@ namespace sfml {
     }
 	
 	template <typename T>
-	sf::Vector2<T> dot(const sf::Vector2<T>& a, const sf::Vector2<T>& b) {
+	T dot(const sf::Vector2<T>& a, const sf::Vector2<T>& b) {
 		return a.x*b.x + a.y*b.y;
 	}
 
