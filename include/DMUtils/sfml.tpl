@@ -19,12 +19,12 @@ namespace sfml {
     T norm2(const sf::Vector2<T>& v) {
         return (v.x*v.x + v.y*v.y);
     }
-	
+
     template <typename T>
     T norm(const sf::Vector2<T>& v) {
-        return sqrt(norm2((v.x*v.x + v.y*v.y)));
+        return sqrt(norm2(v));
     }
-	
+
 	template <typename T>
 	T dot(const sf::Vector2<T>& a, const sf::Vector2<T>& b) {
 		return a.x*b.x + a.y*b.y;
