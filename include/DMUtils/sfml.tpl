@@ -53,7 +53,8 @@ namespace sfml {
 	sf::Vector2<T> rotate(const sf::Vector2<T>& v, float alpha, const sf::Vector2<T>& o) {
 		return rotate(v-o,alpha)+o;
 	}
-	
+
+	template <typename T>
 	T isLeft(const sf::Vector2<T>& p0, const sf::Vector2<T>& p1, const sf::Vector2<T>& p2)
 	{
 		return ( (p1.x - p0.x) * (p2.y - p0.y) - (p2.x -  p0.x) * (p1.y - p0.y) );
