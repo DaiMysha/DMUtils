@@ -42,7 +42,7 @@ namespace sfml {
     template <typename T>
     sf::Vector2<T> rotate(const sf::Vector2<T>& v, float alpha, const sf::Vector2<T>& o);
 
-    ///Returns an AABB englobbing all the pixels visible in the selected view on the world coordinates
+    ///Returns an AABB englobing all the pixels visible in the selected view on the world coordinates
 	inline sf::IntRect getViewInWorldAABB(const sf::View& view) {
         sf::Vector2f p[4];
         sf::Vector2f c = view.getCenter();
@@ -62,7 +62,15 @@ namespace sfml {
 
         return sf::IntRect(sf::Vector2i(xmin,ymin),sf::Vector2i(xmax-xmin,ymax-ymin));
     }
-
+	
+	///tests if p2 is left of the line p0 -> p1
+	///returns >0 if left, 0 if on the line, <0 if right
+	template <typename T>
+	T isLeft(const sf::Vector2<T>& p0, const sf::Vector2<T>& p1, const sf::Vector2<T>& p2);
+	
+	///returns true if the point p is inside the shape s
+	template <typename T>
+	bool contains(const sf::ConvexShape& s, sf::Vector2<T> p);
 }
 }
 

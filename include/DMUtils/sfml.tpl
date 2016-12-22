@@ -53,6 +53,93 @@ namespace sfml {
 	sf::Vector2<T> rotate(const sf::Vector2<T>& v, float alpha, const sf::Vector2<T>& o) {
 		return rotate(v-o,alpha)+o;
 	}
+	
+	T isLeft(const sf::Vector2<T>& p0, const sf::Vector2<T>& p1, const sf::Vector2<T>& p2)
+	{
+		return ( (p1.x - p0.x) * (p2.y - p0.y) - (p2.x -  p0.x) * (p1.y - p0.y) );
+	}
 
+	template <typename T>
+	bool contains(const sf::ConvexShape& shape, sf::Vector2<T> point)
+	{
+		size_t minyi = 0, maxyi = 0;
+		T miny = shape.getPoint(0).y;
+		T maxy = miny;
+
+		point = point - shape.getPosition();
+
+		for(size_t i = 0; i < shape.getPointCount(); ++i)
+		{
+			T y = shape.getPoint(i).y;
+			if(y < miny)
+			{
+				minyi = i;
+				miny = y;
+			}
+			else if(y > maxy)
+			{
+				maxyi = i;
+				maxy = y;
+			}
+		}
+
+		//std::cout << "min/max : " << miny << "/" << maxy << " / " << point.y << std::endl;
+
+		if(point.y < miny || point.y > maxy)
+		{
+			return false;
+		}
+
+		//find the two segments that surround the point in y axis
+		//first going right side
+		size_t rightSide1 = minyi, leftSide1 = minyi;
+		size_t rightSide2 = minyi, leftSide2 = minyi;
+		int i = minyi;
+		int ip1;
+		while(i != maxyi)
+		{
+			if(i >= shape.getPointCount())
+			{
+				i = 0;
+			}
+			ip1 = i+1;
+			if(ip1 >= shape.getPointCount())
+			{
+				ip1 = 0;
+			}
+
+			if(point.y > shape.getPoint(i).y && point.y < shape.getPoint(ip1).y)
+			{
+				rightSide1 = i;
+				rightSide2 = ip1;
+			}
+			++i;
+		}
+
+		//leftSide
+		i = minyi;
+		while(i != maxyi)
+		{
+			if(i < 0)
+			{
+				i = shape.getPointCount()-1;
+			}
+			ip1 = i-1;
+			if(ip1 < 0)
+			{
+				ip1 = shape.getPointCount()-1;
+			}
+
+			if(point.y > shape.getPoint(i).y && point.y < shape.getPoint(ip1).y)
+			{
+				leftSide1 = ip1;
+				leftSide2 = i;
+			}
+			--i;
+		}
+
+		return isLeft(shape.getPoint(rightSide1), shape.getPoint(rightSide2), point) >= 0
+			&& isLeft(shape.getPoint(leftSide1), shape.getPoint(leftSide2), point) >= 0;
+	}
 }
 }
