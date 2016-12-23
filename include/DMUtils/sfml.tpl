@@ -64,13 +64,19 @@ namespace sfml {
 	}
 
 	template <typename T>
-	bool contains(const sf::ConvexShape& shape, sf::Vector2<T> point)
+	bool contains(const sf::ConvexShape& shapeParam, sf::Vector2<T> point)
 	{
+		sf::ConvexShape shape;
+		shape.setPointCount(shapeParam.getPointCount());
+		sf::Transform t = shapeParam.getTransform();
+		for(size_t i = 0; i < shape.getPointCount(); ++i)
+		{
+			shape.setPoint(i, t.transformPoint(shapeParam.getPoint(i)));
+		}
+		
 		size_t minyi = 0, maxyi = 0;
 		T miny = shape.getPoint(0).y;
 		T maxy = miny;
-
-		point = point - shape.getPosition();
 
 		for(size_t i = 0; i < shape.getPointCount(); ++i)
 		{
