@@ -57,12 +57,16 @@ namespace sfml {
 	template <typename T>
 	T isLeft(const sf::Vector2<T>& p0, const sf::Vector2<T>& p1, const sf::Vector2<T>& p2)
 	{
-		return ( (p1.x - p0.x) * (p2.y - p0.y) - (p2.x -  p0.x) * (p1.y - p0.y) );
+		if(p0.y < p1.y)
+			return ( (p1.x - p0.x) * (p2.y - p0.y) - (p2.x -  p0.x) * (p1.y - p0.y) );
+		else
+			return ( (p0.x - p1.x) * (p2.y - p1.y) - (p2.x -  p1.x) * (p0.y - p1.y) );
 	}
 
 	template <typename T>
 	bool contains(const sf::ConvexShape& shape, sf::Vector2<T> point)
 	{
+		std::cout << "contains" << std::endl;
 		size_t minyi = 0, maxyi = 0;
 		T miny = shape.getPoint(0).y;
 		T maxy = miny;
@@ -84,8 +88,6 @@ namespace sfml {
 			}
 		}
 
-		//std::cout << "min/max : " << miny << "/" << maxy << " / " << point.y << std::endl;
-
 		if(point.y < miny || point.y > maxy)
 		{
 			return false;
@@ -99,48 +101,75 @@ namespace sfml {
 		int ip1;
 		while(i != maxyi)
 		{
-			if(i >= shape.getPointCount())
-			{
-				i = 0;
-			}
 			ip1 = i+1;
 			if(ip1 >= shape.getPointCount())
 			{
 				ip1 = 0;
 			}
 
-			if(point.y > shape.getPoint(i).y && point.y < shape.getPoint(ip1).y)
+			int minYtmp, maxYtmp;
+			if(shape.getPoint(i).y < shape.getPoint(ip1).y)
 			{
-				rightSide1 = i;
-				rightSide2 = ip1;
+				minYtmp = i;
+				maxYtmp = ip1;
+			}
+			else
+			{
+				maxYtmp = i;
+				minYtmp = ip1;
+			}
+
+			if(point.y >= shape.getPoint(minYtmp).y && point.y <= shape.getPoint(maxYtmp).y)
+			{
+				rightSide1 = minYtmp;
+				rightSide2 = maxYtmp;
 			}
 			++i;
+			if(i >= shape.getPointCount())
+			{
+				i = 0;
+			}
 		}
 
 		//leftSide
 		i = minyi;
 		while(i != maxyi)
 		{
-			if(i < 0)
-			{
-				i = shape.getPointCount()-1;
-			}
 			ip1 = i-1;
 			if(ip1 < 0)
 			{
 				ip1 = shape.getPointCount()-1;
 			}
 
-			if(point.y > shape.getPoint(i).y && point.y < shape.getPoint(ip1).y)
+			int minYtmp, maxYtmp;
+			if(shape.getPoint(i).y < shape.getPoint(ip1).y)
 			{
-				leftSide1 = ip1;
-				leftSide2 = i;
+				minYtmp = i;
+				maxYtmp = ip1;
+			}
+			else
+			{
+				maxYtmp = i;
+				minYtmp = ip1;
+			}
+
+			if(point.y >= shape.getPoint(minYtmp).y && point.y <= shape.getPoint(maxYtmp).y)
+			{
+				leftSide1 = minYtmp;
+				leftSide2 = maxYtmp;
 			}
 			--i;
+			if(i < 0)
+			{
+				i = shape.getPointCount()-1;
+			}
 		}
 
-		return isLeft(shape.getPoint(rightSide1), shape.getPoint(rightSide2), point) >= 0
-			&& isLeft(shape.getPoint(leftSide1), shape.getPoint(leftSide2), point) >= 0;
+		return (isLeft(shape.getPoint(rightSide1), shape.getPoint(rightSide2), point) >= 0
+			&& isLeft(shape.getPoint(leftSide1), shape.getPoint(leftSide2), point) <= 0)
+			||
+			(isLeft(shape.getPoint(rightSide1), shape.getPoint(rightSide2), point) <= 0
+			&& isLeft(shape.getPoint(leftSide1), shape.getPoint(leftSide2), point) >= 0);
 	}
 }
 }
